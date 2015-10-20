@@ -148,7 +148,7 @@ function Ipause() {
 function Iunpause() {
 	currentEqSpot = 0;
 	equationList = [0, 'plus', 0, 'plus', 0, 'plus', 0];
-	for(var i = 0; i < equationSprites.length; i++) {
+	for(var i = 0; i < currentEqSpot; i++) {
 		equationSprites[i].kill();
 	};
 	equation.kill();

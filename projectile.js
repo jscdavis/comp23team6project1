@@ -13,15 +13,15 @@ function Projectile(game, x, y, typ, spd) {
 	game.physics.enable(this, Phaser.Physics.ARCADE);
 	this.body.gravity.y = 0;
 	this.body.collideWorldBounds = false;
+	this.body.velocity.x = speed;
 	game.add.existing(this);
 }
 
 
 Projectile.prototype.update = function() {
 	//check collisions?
-
 }
 
-function collideWith(projectile, object) {
+function projCollide(projectile, object) {
 	projectile.kill();
 }

@@ -4,7 +4,7 @@ Player.prototype.constructor = Player;
 
 var moveKeys;
 var moveSpeed = 200;
-var jumpSpeed = -600;
+var jumpSpeed = -325;
 var itemIDs = ['doubleJump', 'projectile', 'invinsible', 'build'];
 
 //array that keeps track of each item

@@ -10,6 +10,9 @@ var map;
 var layer;
 var actionKeys;
 var pickup;
+var theme;
+var win;
+var lose;
 var posAvailable = 0;
 var textPos = 0;
 
@@ -18,6 +21,9 @@ function preload() {
     game.load.bitmapFont('bmFont', 'assets/bmFont.png', 'assets/bmFont.xml');
     game.load.tilemap('map', 'assets/tilemap.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.audio('pickup', 'assets/pickup.mp3');
+    game.load.audio('win', 'assets/win.mp3');
+    game.load.audio('lose', 'assets/lose.mp3');
+    game.load.audio('theme', 'assets/theme.mp3');
     game.load.image('grass', 'assets/grass.png');
     game.load.image('dirt', 'assets/dirt.png');
     game.load.image('sky', 'assets/sky.png');
@@ -57,8 +63,6 @@ function create() {
     layer = map.createLayer('Tile Layer 1');
     layer.resizeWorld();
 
-    game.add.text(100, 100, 'helloooooooooooooooooooooooooooooooooooooooo');
-
     var array = [21];
     map.setCollisionByExclusion(array, true, layer);
 
@@ -73,9 +77,9 @@ function create() {
     inventory = new Inventory(this, 0, 0);
 
     actionKeys = {
-        pause: Phaser.Key(game, 'P'),
-        use: Phaser.Key(game, 'SPACEBAR'),
-        nextItem: Phaser.Key(game, 'SHIFT'),
+        pause: game.input.keyboard.addKey(Phaser.Keyboard.P),
+        use: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
+        nextItem: game.input.keyboard.addKey(Phaser.Keyboard.SHIFT),
     };
 
     //pause.onDown(pause);
@@ -140,7 +144,12 @@ function create() {
 
     */
     pickup = game.add.audio('pickup');
+    theme = game.add.audio('theme');
+    win = game.add.audio('win');
+    lose = game.add.audio('lose');
 
+    theme.loop = true;
+    theme.play();
 }
 
 function update() {
@@ -148,6 +157,7 @@ function update() {
     //collisions
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.overlap(player, items, addItem, null, this);
+    
 
 }
 
@@ -186,9 +196,11 @@ function toStr(num) {
 
 function pause() {
     if(game.paused) {
+        theme.resume();
         Iunpause();
         game.paused = false;
     } else {
+        theme.pause();
         Ipause();
         game.paused = true;
     }
