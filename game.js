@@ -3,6 +3,7 @@ var platforms;
 var ops;
 
 var player;
+var enemy;
 var inventory;
 var items;
 var enemies;
@@ -24,6 +25,8 @@ function preload() {
     game.load.image('background', 'assets/bg.png');
     game.load.image('platform', 'assets/platform.png');
     game.load.image('player', 'assets/player.png');
+    game.load.image('enemy', 'assets/enemy.png');
+    //game.load.spritesheet('enemy', 'assets/metalslug_mummy37x45.png', 37, 45, 18);
     game.load.image('0', 'assets/zero.png');
     game.load.image('1', 'assets/one.png');
     game.load.image('2', 'assets/two.png');
@@ -79,7 +82,15 @@ function create() {
     };
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = new Player(this, 32, game.world.height - 80);
+    player = new Player(this, 32, game.world.height - 200);
+    game.add.existing(player);
+    enemy = new Enemy (this, 32, game.world.height - 80);
+    game.add.existing(enemy);
+    
+
+
+    //enemy = create_enemy();
+    //update_enemy(enemy);
 
     /*
     game.add.sprite(0, 0, 'background');
@@ -149,9 +160,26 @@ function fn() {
 function update() {
 
     //collisions
-    game.physics.arcade.collide(player, layer);
-    game.physics.arcade.overlap(player, items, addItem, null, this);
 
+
+    game.physics.arcade.collide(player, layer);
+    game.physics.arcade.collide(enemy, layer, changeDirectons);
+
+    
+    
+
+    game.physics.arcade.overlap(player, items, addItem, null, this);
+    //game.physics.arcade.overlap(enemy, items, addItem, null, this);
+
+    game.physics.arcade.overlap(enemy, player, killPlayer, null, this);
+
+
+
+}
+
+function killPlayer(){
+
+    player.kill();
 }
 
 function toStr(num) {
@@ -195,4 +223,8 @@ function pause() {
         Ipause();
         game.paused = true;
     }
+}
+
+function changeDirections (enemy, layer){
+    enemy.body.velocity.x *= -1;
 }
