@@ -90,3 +90,8 @@ function makeItem(item) {
 		itemStatus[3]++;
 	}
 }
+
+function killPlayer(player, enemy) {
+	//game over stuff
+	player.kill();
+}

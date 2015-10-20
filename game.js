@@ -3,6 +3,7 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, cr
 var platforms;
 var ops;
 var player;
+var enemy;
 var inventory;
 var items;
 var enemies;
@@ -23,6 +24,7 @@ function preload() {
     game.load.audio('win', 'assets/win.mp3');
     game.load.audio('lose', 'assets/lose.mp3');
     game.load.audio('theme', 'assets/theme.mp3');
+    game.load.image('enemy', 'assets/enemy.png');
     game.load.image('grass', 'assets/grass.png');
     game.load.image('dirt', 'assets/dirt.png');
     game.load.image('sky', 'assets/sky.png');
@@ -87,25 +89,12 @@ function create() {
     };
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = new Player(this, 32, game.world.height - 80);
+    player = new Player(this, 32, game.world.height - 200);
 
-    /*
-    for (var i = 0; i < 6; i++)
-    {
-        var rand = Math.floor(Math.random()*10);
-        //  Create a number inside of the 'items' group
-        var str = toStr(rand);
-        var number = items.create(Math.floor(Math.random()*700) + 50, Math.floor(Math.random()*200) + 51, str);
+    enemy = new Enemy (this, 32, game.world.height - 80);
 
-        number.inputEnabled = true;
-        number.events.onInputDown.add(selected, this);
-        number.body.gravity.y = 0;
-        number.value = rand;
-    }
-    */
 
-    //game.input.onDown.add(pause);
-
+    game.input.onDown.add(pause);
 
     ops = game.add.group();
     ops.enableBody = true;
@@ -147,7 +136,14 @@ function update() {
 
     //collisions
     game.physics.arcade.collide(player, layer);
+    game.physics.arcade.collide(player, platlayer);
+    game.physics.arcade.collide(enemy, platlayer, changeDirections);
+    game.physics.arcade.collide(enemy, layer);
+
     game.physics.arcade.overlap(player, items, addItem, null, this);
+    //game.physics.arcade.overlap(enemy, items, addItem, null, this);
+
+    game.physics.arcade.overlap(player, enemy, killPlayer, null, this);
     if(actionKeys.mute.isDown) {
         if(theme.volume == 1) {
             theme.fadeOut();
