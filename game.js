@@ -165,9 +165,13 @@ function update() {
 
 
     game.physics.arcade.collide(player, layer);
+<<<<<<< HEAD
     game.physics.arcade.collide(player, platlayer);
     game.physics.arcade.collide(enemy, platlayer, changeDirections);
     game.physics.arcade.collide(enemy, layer);
+=======
+    game.physics.arcade.collide(enemy, layer, changeDirectons);
+>>>>>>> 3f0a36648ab9c61dfbb0c45d9b86ebf89f54f489
 
     
     
@@ -229,7 +233,12 @@ function pause() {
     }
 }
 
+<<<<<<< HEAD
 function changeDirections (enemy, layer) {
     console.log('test');
     enemy.body.velocity.x = -200;
+=======
+function changeDirections (enemy, layer){
+    enemy.body.velocity.x *= -1;
+>>>>>>> 3f0a36648ab9c61dfbb0c45d9b86ebf89f54f489
 }
