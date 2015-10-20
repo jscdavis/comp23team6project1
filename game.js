@@ -1,23 +1,28 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
+
 var platforms;
 var ops;
-
 var player;
-var enemy;
 var inventory;
 var items;
 var enemies;
 var map;
 var layer;
-var platlayer;
+var pickup;
+var theme;
+var win;
+var lose;
 var actionKeys;
 var posAvailable = 0;
 var textPos = 0;
 
 function preload() {
-
     game.load.bitmapFont('bmFont', 'assets/bmFont.png', 'assets/bmFont.xml');
     game.load.tilemap('map', 'assets/tilemap.json', null, Phaser.Tilemap.TILED_JSON);
+    game.load.audio('pickup', 'assets/pickup.mp3');
+    game.load.audio('win', 'assets/win.mp3');
+    game.load.audio('lose', 'assets/lose.mp3');
+    game.load.audio('theme', 'assets/theme.mp3');
     game.load.image('grass', 'assets/grass.png');
     game.load.image('dirt', 'assets/dirt.png');
     game.load.image('sky', 'assets/sky.png');
@@ -26,8 +31,6 @@ function preload() {
     game.load.image('background', 'assets/bg.png');
     game.load.image('platform', 'assets/platform.png');
     game.load.image('player', 'assets/player.png');
-    game.load.image('enemy', 'assets/enemy.png');
-    //game.load.spritesheet('enemy', 'assets/metalslug_mummy37x45.png', 37, 45, 18);
     game.load.image('0', 'assets/zero.png');
     game.load.image('1', 'assets/one.png');
     game.load.image('2', 'assets/two.png');
@@ -42,7 +45,7 @@ function preload() {
     game.load.image('equation', 'assets/equation.png');
     game.load.image('add', 'assets/add.png');
     game.load.image('subtract', 'assets/subtract.png');
-    //game.load.image('multiply', 'assets/multiply.png');
+    game.load.image('multiply', 'assets/multiply.png');
     //game.load.image('divide', 'assets/divide.png');
 }
 
@@ -73,36 +76,18 @@ function create() {
 
     map.createFromObjects('Object Layer 1', 4, str, 0, true, false, items);
 
-    items.callAll('fn');
-
     inventory = new Inventory(this, 0, 0);
 
     actionKeys = {
         pause: game.input.keyboard.addKey(Phaser.Keyboard.P),
+        mute: game.input.keyboard.addKey(Phaser.Keyboard.M),
         use: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
-        nextItem: game.input.keyboard.addKey(Phaser.Keyboard.SHIFT)
+        nextItem: game.input.keyboard.addKey(Phaser.Keyboard.SHIFT),
+        clean: game.input.keyboard.addKey(Phaser.Keyboard.L),
     };
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = new Player(this, 32, game.world.height - 200);
-    game.add.existing(player);
-    enemy = new Enemy (this, 32, game.world.height - 80);
-    game.add.existing(enemy);
-    
-
-
-    //enemy = create_enemy();
-    //update_enemy(enemy);
-
-    /*
-    game.add.sprite(0, 0, 'background');
-
-    platforms = game.add.group();
-    platforms.enableBody = true;
-    var platform = platforms.create(0, game.world.height - 50, 'platform');
-    platform.scale.setTo(4, 1);
-    platform.body.immovable = true;
-    */
+    player = new Player(this, 32, game.world.height - 80);
 
     /*
     for (var i = 0; i < 6; i++)
@@ -114,13 +99,13 @@ function create() {
 
         number.inputEnabled = true;
         number.events.onInputDown.add(selected, this);
-        //  Let gravity do its thing
         number.body.gravity.y = 0;
         number.value = rand;
     }
     */
 
-    game.input.onDown.add(pause);
+    //game.input.onDown.add(pause);
+
 
     ops = game.add.group();
     ops.enableBody = true;
@@ -149,45 +134,30 @@ function create() {
     divide.value = "/";
 
     */
-    
+    pickup = game.add.audio('pickup');
+    theme = game.add.audio('theme');
+    win = game.add.audio('win');
+    lose = game.add.audio('lose');
 
-}
-
-function fn() {
-    rand = Math.floor(Math.random()*10);
-        str = toStr(rand);
-        this.value = rand;
+    theme.loop = true;
+    theme.play();
 }
 
 function update() {
 
     //collisions
-
-
     game.physics.arcade.collide(player, layer);
-<<<<<<< HEAD
-    game.physics.arcade.collide(player, platlayer);
-    game.physics.arcade.collide(enemy, platlayer, changeDirections);
-    game.physics.arcade.collide(enemy, layer);
-=======
-    game.physics.arcade.collide(enemy, layer, changeDirectons);
->>>>>>> 3f0a36648ab9c61dfbb0c45d9b86ebf89f54f489
-
-    
-    
-
     game.physics.arcade.overlap(player, items, addItem, null, this);
-    //game.physics.arcade.overlap(enemy, items, addItem, null, this);
-
-    game.physics.arcade.overlap(enemy, player, killPlayer, null, this);
-
-
-
-}
-
-function killPlayer(){
-
-    player.kill();
+    if(actionKeys.mute.isDown) {
+        if(theme.volume == 1) {
+            theme.fadeOut();
+        } else if(theme.volume == 0) {
+            theme.fadeIn();
+        }
+    }
+    if(actionKeys.clean.isDown) {
+        //clean();
+    }
 }
 
 function toStr(num) {
@@ -225,20 +195,44 @@ function toStr(num) {
 
 function pause() {
     if(game.paused) {
+        theme.resume();
         Iunpause();
         game.paused = false;
     } else {
+        theme.pause();
         Ipause();
         game.paused = true;
     }
 }
 
-<<<<<<< HEAD
-function changeDirections (enemy, layer) {
-    console.log('test');
-    enemy.body.velocity.x = -200;
-=======
-function changeDirections (enemy, layer){
-    enemy.body.velocity.x *= -1;
->>>>>>> 3f0a36648ab9c61dfbb0c45d9b86ebf89f54f489
+function clean() {
+    game.cache.removeBitmapFont('bmFont');
+    game.cache.removeTilemap('map');
+    game.cache.removeSound('pickup');
+    game.cache.removeSound('win');
+    game.cache.removeSound('lose');
+    game.cache.removeSound('theme');
+    game.cache.removeImage('grass');
+    game.cache.removeImage('dirt');
+    game.cache.removeImage('sky');
+    game.cache.removeImage('platformR');
+    game.cache.removeImage('platformN');
+    game.cache.removeImage('background');
+    game.cache.removeImage('platform');
+    game.cache.removeImage('player');
+    game.cache.removeImage('0');
+    game.cache.removeImage('1');
+    game.cache.removeImage('2');
+    game.cache.removeImage('3');
+    game.cache.removeImage('4');
+    game.cache.removeImage('5');
+    game.cache.removeImage('6');
+    game.cache.removeImage('7');
+    game.cache.removeImage('8');
+    game.cache.removeImage('9');
+    game.cache.removeImage('inventory');
+    game.cache.removeImage('equation');
+    game.cache.removeImage('add');
+    game.cache.removeImage('subtract');
+    game.cache.removeImage('multiply');
 }
