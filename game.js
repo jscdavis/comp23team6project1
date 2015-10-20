@@ -1,7 +1,7 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, '', { preload: preload, create: create, update: update });
+
 var platforms;
 var ops;
-
 var player;
 var inventory;
 var items;
@@ -17,7 +17,6 @@ var posAvailable = 0;
 var textPos = 0;
 
 function preload() {
-
     game.load.bitmapFont('bmFont', 'assets/bmFont.png', 'assets/bmFont.xml');
     game.load.tilemap('map', 'assets/tilemap.json', null, Phaser.Tilemap.TILED_JSON);
     game.load.audio('pickup', 'assets/pickup.mp3');
@@ -53,18 +52,20 @@ function preload() {
 function create() {
 
     map = game.add.tilemap('map');
-
     map.addTilesetImage('grass');
     map.addTilesetImage('dirt');
     map.addTilesetImage('platformR');
     map.addTilesetImage('platformN');
     map.addTilesetImage('sky');
 
-    layer = map.createLayer('Tile Layer 1');
+    /* this bit causes problems
+
+    layer = map.createLayer('Tile Layer');
     layer.resizeWorld();
 
     var array = [21];
     map.setCollisionByExclusion(array, true, layer);
+    */
 
     items = game.add.group();
     items.enableBody = true;
@@ -72,7 +73,7 @@ function create() {
     var rand = Math.floor(Math.random()*10);
     var str = toStr(rand);
 
-    map.createFromObjects('Object Layer 1', 4, str, 0, true, false, items);
+    map.createFromObjects('Number Layer', 4, str, 0, true, false, items);
 
     inventory = new Inventory(this, 0, 0);
 
@@ -81,6 +82,7 @@ function create() {
         mute: game.input.keyboard.addKey(Phaser.Keyboard.M),
         use: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
         nextItem: game.input.keyboard.addKey(Phaser.Keyboard.SHIFT),
+        clean: game.input.keyboard.addKey(Phaser.Keyboard.L),
     };
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -96,7 +98,6 @@ function create() {
 
         number.inputEnabled = true;
         number.events.onInputDown.add(selected, this);
-        //  Let gravity do its thing
         number.body.gravity.y = 0;
         number.value = rand;
     }
@@ -153,7 +154,9 @@ function update() {
             theme.fadeIn();
         }
     }
-
+    if(actionKeys.clean.isDown) {
+        //clean();
+    }
 }
 
 function toStr(num) {
@@ -199,4 +202,36 @@ function pause() {
         Ipause();
         game.paused = true;
     }
+}
+
+function clean() {
+    game.cache.removeBitmapFont('bmFont');
+    game.cache.removeTilemap('map');
+    game.cache.removeSound('pickup');
+    game.cache.removeSound('win');
+    game.cache.removeSound('lose');
+    game.cache.removeSound('theme');
+    game.cache.removeImage('grass');
+    game.cache.removeImage('dirt');
+    game.cache.removeImage('sky');
+    game.cache.removeImage('platformR');
+    game.cache.removeImage('platformN');
+    game.cache.removeImage('background');
+    game.cache.removeImage('platform');
+    game.cache.removeImage('player');
+    game.cache.removeImage('0');
+    game.cache.removeImage('1');
+    game.cache.removeImage('2');
+    game.cache.removeImage('3');
+    game.cache.removeImage('4');
+    game.cache.removeImage('5');
+    game.cache.removeImage('6');
+    game.cache.removeImage('7');
+    game.cache.removeImage('8');
+    game.cache.removeImage('9');
+    game.cache.removeImage('inventory');
+    game.cache.removeImage('equation');
+    game.cache.removeImage('add');
+    game.cache.removeImage('subtract');
+    game.cache.removeImage('multiply');
 }

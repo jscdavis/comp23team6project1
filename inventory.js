@@ -7,6 +7,8 @@ var SENTINEL = -1000;
 var FULL = 7;
 var jumpCost = 15;
 var projCost = 25;
+var maxJump = 5; //max number of extra jump powerups allowed at once
+var maxProj = 10; //max number of projectile powerups allowed at once
 var itemList; //list of items player currently has
 var itemSprites; //list of sprites displaying items
 var pupList; //list of pups player currently has
@@ -25,8 +27,8 @@ function Inventory(game, x, y) {
 	game.add.existing(this);
 	this.fixedToCamera = true;
 
-	createButton = game.add.sprite(0, game.world.height-32, 'multiply');
-	createButton.fixedToCamera = true;
+	//createButton = game.add.sprite(0, game.world.height-32, 'multiply');
+	//createButton.fixedToCamera = true;
 	currentPUP = 0;
 	currentEqSpot = 0;
 	currentItemSpot = 0;
