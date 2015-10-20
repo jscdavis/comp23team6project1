@@ -8,11 +8,11 @@ var items;
 var enemies;
 var map;
 var layer;
-var actionKeys;
 var pickup;
 var theme;
 var win;
 var lose;
+var actionKeys;
 var posAvailable = 0;
 var textPos = 0;
 
@@ -78,25 +78,13 @@ function create() {
 
     actionKeys = {
         pause: game.input.keyboard.addKey(Phaser.Keyboard.P),
+        mute: game.input.keyboard.addKey(Phaser.Keyboard.M),
         use: game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR),
         nextItem: game.input.keyboard.addKey(Phaser.Keyboard.SHIFT),
     };
 
-    //pause.onDown(pause);
-    //use.onDown(useItem);
-
     game.physics.startSystem(Phaser.Physics.ARCADE);
     player = new Player(this, 32, game.world.height - 80);
-
-    /*
-    game.add.sprite(0, 0, 'background');
-
-    platforms = game.add.group();
-    platforms.enableBody = true;
-    var platform = platforms.create(0, game.world.height - 50, 'platform');
-    platform.scale.setTo(4, 1);
-    platform.body.immovable = true;
-    */
 
     /*
     for (var i = 0; i < 6; i++)
@@ -114,7 +102,8 @@ function create() {
     }
     */
 
-    game.input.onDown.add(pause);
+    //game.input.onDown.add(pause);
+
 
     ops = game.add.group();
     ops.enableBody = true;
@@ -157,7 +146,13 @@ function update() {
     //collisions
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.overlap(player, items, addItem, null, this);
-    
+    if(actionKeys.mute.isDown) {
+        if(theme.volume == 1) {
+            theme.fadeOut();
+        } else if(theme.volume == 0) {
+            theme.fadeIn();
+        }
+    }
 
 }
 
