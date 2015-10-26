@@ -5,11 +5,9 @@ Player.prototype.constructor = Player;
 var moveKeys;
 var moveSpeed = 200;
 var jumpSpeed = -325;
-var itemIDs = ['doubleJump', 'projectile', 'invinsible', 'build'];
 
 //array that keeps track of each item
 //for some, it may act like a boolean, some may be a count, etc.
-var itemStatus = [0, 0, 0, 0];
 
 function Player(game, x, y) {
 	Phaser.Sprite.call(this, game, x, y, 'player');
@@ -60,38 +58,20 @@ function jump() {
 	player.body.velocity.y += jumpSpeed;
 }
 
-function build() {
-	//check if anything is inside the tile below the player
-	//if clear, build a 1 tile platform, decrease itemStatus[3]
-}
-
-function useItem(player, item) {
-	if(item == itemIDs[0]) {
+function useItem(item) {
+	if(item == 0) {
+		console.log('used jump');
 		jump();
-	} else if(item == itemIDs[1]) {
+	} else if(item == 1) {
 		//create projectile moving in direction of player
-	} else if(item == itemIDs[2]) {
-		//make enemy collisions do nothing to player
-	} else if(item == itemIDs[3]) {
-		build();
 	}
 }
 
-//var itemIDs = {'doubleJump', 'projectile', 'invinsible', 'build'}
-function makeItem(item) {
-	if(item == itemIDs[0]) {
-		itemStatus[0]++;
-	} else if(item == itemIDs[1]) {
-		itemStatus[1]++;
-	} else if(item == itemIDs[2]) {
-		itemStatus[2]++;
-		//maybe add time instead of count
-	} else if(item == itemIDs[3]) {
-		itemStatus[3]++;
-	}
-}
 
 function killPlayer(player, enemy) {
 	//game over stuff
+	theme.stop();
+	lose.play();
 	player.kill();
+	//display fail animation
 }

@@ -20,58 +20,119 @@ var currentPUP; //current pup selected
 var currentEqSpot; //the next available spot in the create pup flow
 var currentItemSpot; //next available spot in the players inventory
 var createButton; //button to be clicked when
+var useKeys; //keys to select items for equation
 
 
 function Inventory(game, x, y) {
 	Phaser.Sprite.call(this, game, x, y, 'inventory');
 	game.add.existing(this);
 	this.fixedToCamera = true;
-
-	//createButton = game.add.sprite(0, game.world.height-32, 'multiply');
-	//createButton.fixedToCamera = true;
 	currentPUP = 0;
 	currentEqSpot = 0;
 	currentItemSpot = 0;
-	pupList = [0, 0];
-	equationList = [0, 'plus', 0, 'plus', 0];
+	pupList = [10, 0];
+	equationList = [0, '+', 0, '+', 0];
 	equationSprites = new Array(5);
 	itemSprites = new Array(7);
 	pupSprites = new Array(2);
-	itemList = ['0', '0', '0', '0', '0', '0', '0'];
+	itemList = [0, 0, 0, 0, 0, 0, 0];
+	equation = game.add.sprite(game.camera.x + 375, game.camera.y + 10, 'equation');
+	equation.fixedToCamera = true;
+
+	pupSprites[0] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[0].toString(), 12);
+	pupSprites[0].fixedToCamera = true;
+	pupSprites[0].cameraOffset.setTo(650, 40); 
+	pupSprites[1] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[1].toString(), 12);
+	pupSprites[1].fixedToCamera = true;
+	pupSprites[1].cameraOffset.setTo(750, 40); 
+
+	useKeys = {
+		inv1: game.input.keyboard.addKey(Phaser.Keyboard.ONE),
+		inv2: game.input.keyboard.addKey(Phaser.Keyboard.TWO),
+		inv3: game.input.keyboard.addKey(Phaser.Keyboard.THREE),
+		inv4: game.input.keyboard.addKey(Phaser.Keyboard.FOUR),
+		inv5: game.input.keyboard.addKey(Phaser.Keyboard.FIVE),
+		inv6: game.input.keyboard.addKey(Phaser.Keyboard.SIX),
+		inv7: game.input.keyboard.addKey(Phaser.Keyboard.SEVEN),
+		plus: game.input.keyboard.addKey(Phaser.Keyboard.EQUALS),
+		minus: game.input.keyboard.addKey(Phaser.Keyboard.UNDERSCORE),
+		make: game.input.keyboard.addKey(Phaser.Keyboard.ENTER),
+	}
+}
+
+Inventory.prototype.create = function () {
 
 }
 
 Inventory.prototype.update = function () {
 
-}
-
-function highlight(ID) {
-	//highlights box around ID location
-	//0-6 = item spots, 7-10 = pup spots
-
+	if(useKeys.inv1.isDown && currentItemSpot >= 1 && itemSprites[0].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(0);
+	}
+	if(useKeys.inv2.isDown && currentItemSpot >= 2 && itemSprites[1].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(1);
+	}
+	if(useKeys.inv3.isDown && currentItemSpot >= 3 && itemSprites[2].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(2);
+	}
+	if(useKeys.inv4.isDown && currentItemSpot >= 4 && itemSprites[3].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(3);
+	}
+	if(useKeys.inv5.isDown && currentItemSpot >= 5 && itemSprites[4].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(4);
+	}
+	if(useKeys.inv6.isDown && currentItemSpot >= 6 && itemSprites[5].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(5);
+	}
+	if(useKeys.inv7.isDown && currentItemSpot >= 7 && itemSprites[6].alpha == 1 && currentEqSpot%2 == 0) {
+		addToEq(6);
+	}
+	if(useKeys.plus.isDown && currentEqSpot%2 != 0) {
+		addToEq(10);
+	}
+	if(useKeys.minus.isDown && currentEqSpot%2 != 0) {
+		addToEq(20);
+	}
+	if(useKeys.make.isDown) {
+		createEq();
+	}
 }
 
 function renderEquation() {
 	for (var i = 0; i < equationList.length; i++) {
 		if(i%2 == 0)
-			equationSprites[i] = game.add.text(game, game.camera.x + 200 + i*50, game.camera.y + 200, equationList[i]);
+			equationSprites[i] = game.add.bitmapText(game, game.camera.x + 505 + i*50, game.camera.y + 5, 'bmFont', equationList[i].toString(), 24);
 		else
-			equationSprites[i] = game.add.text(game, game.camera.x + 215 + i*50, game.camera.y + 215, equationList[i]);
+			equationSprites[i] = game.add.bitmapText(game, game.camera.x + 520 + i*50, game.camera.y + 10, 'bmFont', equationList[i], 8);
+		console.log("renderEq i: " + i);
 	};
 }
 
-function renderInv (argument) {
-	//render current inventory
+function renderInv () {
+	for(var i = 0; i < itemList.length; i++) {
+		if(itemList[i] != 0) {
+			itemSprites[i] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', itemList[i].toString(), 32);
+			itemSprites[i].fixedToCamera = true;
+			itemSprites[i].cameraOffset.setTo(50*i + 10, 10);
+			console.log("renderInv i: " + i);
+		} else
+			itemSprites[i] = null;
+	};
+	for(var j = 0; j < pupList.length; j++) {
+		pupSprites[j].kill();
+		pupSprites[j] = game.add.bitmapText(game.camera.x, game.camera.y, pupList[j]);
+		pupSprites[j].fixedToCamera = true;
+		pupSprites[j].cameraOffset.setTo(650 + j*100, 25); 
+	};
 }
 
 function addItem(player, item) {
 	if(currentItemSpot < FULL) {
 		pickup.play();
-		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x + 50*currentItemSpot + 10, game.camera.y, 'bmFont', toStr(item.value), 32);
+		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', toStr(item.value), 32);
 		itemSprites[currentItemSpot].fixedToCamera = true;
-		itemSprites[currentItemSpot].cameraOffset.setTo(10, 10);
+		itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
 		itemList[currentItemSpot] = item.value;
-		console.log(item.value);
 		currentItemSpot++;
 		item.kill();
 		return true;
@@ -79,79 +140,150 @@ function addItem(player, item) {
 		return false;
 }
 
-function removeItem(position) {
-	//removes item from inventory in position position
-	if(position >= currentItemSpot) {
+function addNum(num) {
+	console.log(num);
+	var numStr = '' + num;
+	if(currentItemSpot < FULL) {
+		pickup.play();
+		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', numStr, 32);
+		itemSprites[currentItemSpot].fixedToCamera = true;
+		itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
+		itemList[currentItemSpot] = num;
+		currentItemSpot++;
+		return true;
+	} else
 		return false;
-	}
-	for (var i = position; i < currentItemSpot; i++) {
-		if(i != 6)
-			itemList[i] = itemList[i+1];
-	}
-	itemList[currentItemSpot-1] = '0';
-	currentItemSpot--;
 }
 
-function selected(item) {
-	//places the given item into the next available spot in the create pup flow
-	//adds it to numList
-	if(currentEqSpot == FULL || !game.paused)
-		return false;
-
-	if(currentEqSpot%2 == 0) { //expecting number
-		if(item.value == '+' || item.value == '-')
-			return false;
-	} else {
-		if(item.value != '+' && item.value != '-')
-			return false;
+function removeItems() {
+	//removes all items from inventory used in equation
+	for (var i = 0; i < currentItemSpot; i++) {
+		if(itemSprites[i].alpha < 1) {
+			itemSprites[i].kill();
+			itemSprites[i] = itemSprites[i+1];
+			itemList[i] = itemList[i+1];
+			itemList[currentItemSpot-1] = 0;
+			currentItemSpot--;
+			i--;
+		}
 	}
-	equationList[currentEqSpot] = item.value;
-	currentEqSpot++;
-	renderEquation();
-	return true;
+}
+
+function restoreItems() {
+	for(var i = 0; i < currentItemSpot; i++) {
+		itemSprites[i].alpha = 1;
+	};
 }
 
 function createEq() {
 	var num = result();
-	if(num == SENTINEL)
-		return;
-	if(num == jumpCost) {
+
+	if(num < 0) {
+		destroyEquation();
+		restoreItems();
+		return false;
+
+	} else if(num == jumpCost) {
 		pupList[0]++;
+		removeItems();
+
 	} else if(num == projCost) {
+		removeItems();
 		pupList[1] += 3;
+
+	} else if(num != 0) {
+		removeItems();
+		addNum(num);
 	}
+	destroyEquation();
+	return true;
+}
+
+function addToEq(pos) {
+	var posx, posy;
+
+	if(currentEqSpot >= 5)
+		return false;
+	if(pos > 7) {
+		if(pos == 10) {
+			equationList[currentEqSpot] = '+';
+			posx = 385 + currentEqSpot*50;
+			posy = 25;
+		}
+		if(pos == 20) {
+			equationList[currentEqSpot] = '-';
+			posx = 385 + currentEqSpot*50;
+			posy = 25;
+		}
+	}
+	if(pos < 7 && itemList[pos] != 0) {
+		posx = 385 + currentEqSpot*50;
+		posy = 20;
+		equationList[currentEqSpot] = itemList[pos];
+		console.log("iL[pos]: " + itemList[pos]);
+		itemSprites[pos].alpha = 0.25;
+	}
+	equationSprites[currentEqSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', equationList[currentEqSpot], 24);
+	equationSprites[currentEqSpot].fixedToCamera = true;
+	equationSprites[currentEqSpot].cameraOffset.setTo(posx, posy);
+	currentEqSpot++;
+	return true;
+}
+
+function destroyEquation() {
+	for(var i = 0; i < currentEqSpot; i++) {
+		equationSprites[i].kill();
+	};
+	equationList = [0, 'plus', 0, 'plus', 0, 'plus', 0];
+	currentEqSpot = 0;
 }
 
 function result() {
 	//returns what the result of the current nums/ops is
-	var result;
+	var result = 0;
 
-	if(currentEqSpot == 0) {
+	if(currentEqSpot < 3) {
 		return SENTINEL;
 	}
-	result += equationList[0];
+
+	result += parseInt(equationList[0]);
+
 	if(equationList[1] == '+') {
-		result += equationList[2];
+		result += parseInt(equationList[2]);
+
 	} else if(equationList[1] == '-') {
-		result -= equationList[2];
+		result -= parseInt(equationList[2]);
 	}
+
+	if(currentEqSpot < 5) {
+		console.log('resultShort: ' + result);
+		return result;
+	}
+
 	if(equationList[3] == '+') {
-		result += equationList[4];
+		result += parseInt(equationList[4]);
+
 	} else if(equationList[3] == '-') {
-		result -= equationList[4];
+		result -= parseInt(equationList[4]);
+
 	}
+	console.log('result: ' + result);
 	return result;
 }
 
-function Ipause() {
-	equation = game.add.sprite(game.camera.x + 200, game.camera.y + 200, 'equation');
-}
-
-function Iunpause() {
-	currentEqSpot = 0;
-	equationList = [0, 'plus', 0, 'plus', 0, 'plus', 0];
-	for(var i = 0; i < currentEqSpot; i++) {
-		equationSprites[i].kill();
-	};
-	equation.kill();
+function use(id) {
+	console.log('now');
+	if(id == 0) {
+		if(pupList[0] > 0) {
+			console.log('tried to use jump');
+			useItem(0);
+			pupList[0]--;
+			renderInv();
+		}
+	} else if(id == 1) {
+		if(pupList[1] > 0) {
+			useItem(1);
+			pupList[1]--;
+		}
+	}
 }

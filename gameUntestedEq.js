@@ -1,5 +1,7 @@
 var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, create: create, update: update });
 
+var platforms;
+var ops;
 var player;
 var enemy;
 var enemy2;
@@ -15,8 +17,6 @@ var theme;
 var win;
 var lose;
 var actionKeys;
-var jButton;
-var pButton;
 var posAvailable = 0;
 var textPos = 0;
 
@@ -48,7 +48,10 @@ function preload() {
     game.load.image('9', 'assets/nine.png');
     game.load.image('inventory', 'assets/inventory.png');
     game.load.image('equation', 'assets/equation.png');
-    game.load.image('carrot', 'assets/carrot.png');
+    game.load.image('add', 'assets/add.png');
+    game.load.image('subtract', 'assets/subtract.png');
+    game.load.image('multiply', 'assets/multiply.png');
+    //game.load.image('divide', 'assets/divide.png');
 }
 
 function create() {
@@ -75,29 +78,43 @@ function create() {
     var rand = Math.floor(Math.random()*10);
     var str = toStr(rand);
 
-    map.createFromObjects('Number Layer', 8, 'carrot', 0, true, false, items);
+    map.createFromObjects('Number Layer', 8, str, 0, true, false, items);
 
     items.callAll('updateNum');
 
     inventory = new Inventory(this, 0, 0);
 
     actionKeys = {
-        pause: game.input.keyboard.addKey(Phaser.Keyboard.K),
+        pause: game.input.keyboard.addKey(Phaser.Keyboard.P),
         mute: game.input.keyboard.addKey(Phaser.Keyboard.M),
         useJ: game.input.keyboard.addKey(Phaser.Keyboard.COMMA),
         useP: game.input.keyboard.addKey(Phaser.Keyboard.PERIOD),
         clean: game.input.keyboard.addKey(Phaser.Keyboard.L),
     };
-    jButton = false;
-    pButton = false;
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
-    player = new Player(this, 200, game.world.height - 600);
+    player = new Player(this, 600, game.world.height - 200);
 
     enemy = new Enemy (this, 32, game.world.height - 80);
     enemy2 = create_enemy2();
 
+
     game.input.onDown.add(pause);
+
+    ops = game.add.group();
+    ops.enableBody = true;
+
+    var add = ops.create(10, 55, 'add');
+    var subtract = ops.create(10, 85, 'subtract');
+    
+    add.inputEnabled = true;
+    add.events.onInputDown.add(selected, this);
+    add.value = "+";
+    add.fixedToCamera = true;
+    subtract.inputEnabled = true;
+    subtract.events.onInputDown.add(selected, this);
+    subtract.value = "-";
+    subtract.fixedToCamera = true;
 
     pickup = game.add.audio('pickup');
     theme = game.add.audio('theme');
@@ -132,23 +149,6 @@ function update() {
     if(actionKeys.clean.isDown) {
         clean();
     }
-    if(actionKeys.useJ.isDown) {
-        if(jButton) {
-            use(0);
-            jButton = false;
-        }
-    } else {
-        jButton = true;
-    }
-    if(actionKeys.useP.isDown) {
-        if(pButton) {
-            pButton = false;
-            use(0);
-        }
-    } else {
-        pButton = true;
-    }
-
 }
 
 function toStr(num) {
@@ -193,9 +193,11 @@ function updateNum(number) {
 function pause() {
     if(game.paused) {
         theme.resume();
+        Iunpause();
         game.paused = false;
     } else {
         theme.pause();
+        Ipause();
         game.paused = true;
     }
 }
