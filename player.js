@@ -55,7 +55,7 @@ function moveLeft() {
 }
 
 function jump() {
-	player.body.velocity.y += jumpSpeed;
+	player.body.velocity.y = jumpSpeed;
 }
 
 function useItem(item) {

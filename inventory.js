@@ -109,18 +109,22 @@ function renderEquation() {
 }
 
 function renderInv () {
-	for(var i = 0; i < itemList.length; i++) {
-		if(itemList[i] != 0) {
-			itemSprites[i] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', itemList[i].toString(), 32);
-			itemSprites[i].fixedToCamera = true;
-			itemSprites[i].cameraOffset.setTo(50*i + 10, 10);
-			console.log("renderInv i: " + i);
-		} else
-			itemSprites[i] = null;
-	};
+	// currentItemSpot = 0;
+	// for(var i = 0; i < itemList.length; i++) {
+	// 	if(itemList[i] != 0) {
+	// 		itemSprites[i].kill();
+	// 		addNum(parseInt(itemList[i]));
+	// 		itemSprites[i].fixedToCamera = true;
+	// 		itemSprites[i].cameraOffset.setTo(50*i + 10, 10);
+	// 		console.log("renderInv i: " + i);
+	// 	} else
+	// 		itemSprites[i] = null;
+	// };
+	console.log("2nd for loop");
 	for(var j = 0; j < pupList.length; j++) {
+		console.log('werk');
 		pupSprites[j].kill();
-		pupSprites[j] = game.add.bitmapText(game.camera.x, game.camera.y, pupList[j]);
+		pupSprites[j] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[j].toString(), 12);
 		pupSprites[j].fixedToCamera = true;
 		pupSprites[j].cameraOffset.setTo(650 + j*100, 25); 
 	};
@@ -132,7 +136,7 @@ function addItem(player, item) {
 		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', toStr(item.value), 32);
 		itemSprites[currentItemSpot].fixedToCamera = true;
 		itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
-		itemList[currentItemSpot] = item.value;
+		itemList[currentItemSpot] = parseInt(item.value);
 		currentItemSpot++;
 		item.kill();
 		return true;
@@ -142,26 +146,31 @@ function addItem(player, item) {
 
 function addNum(num) {
 	console.log(num);
+	var fontsize = 32;
+	if(num >= 10)
+		fontsize = 20;
 	var numStr = '' + num;
 	if(currentItemSpot < FULL) {
 		pickup.play();
-		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', numStr, 32);
+		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', numStr, fontsize);
 		itemSprites[currentItemSpot].fixedToCamera = true;
-		itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
+		if(fontsize == 32) {
+			itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
+		} else {
+			itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 4, 15);
+		}
 		itemList[currentItemSpot] = num;
 		currentItemSpot++;
 		return true;
 	} else
 		return false;
 }
-
+//TODO: fix this
 function removeItems() {
 	//removes all items from inventory used in equation
 	for (var i = 0; i < currentItemSpot; i++) {
 		if(itemSprites[i].alpha < 1) {
 			itemSprites[i].kill();
-			itemSprites[i] = itemSprites[i+1];
-			itemList[i] = itemList[i+1];
 			itemList[currentItemSpot-1] = 0;
 			currentItemSpot--;
 			i--;
@@ -188,14 +197,17 @@ function createEq() {
 		removeItems();
 
 	} else if(num == projCost) {
-		removeItems();
 		pupList[1] += 3;
+		removeItems();
 
 	} else if(num != 0) {
 		removeItems();
 		addNum(num);
+	} else if(num == 0) {
+		removeItems();
 	}
 	destroyEquation();
+	console.log(itemList);
 	return true;
 }
 
@@ -219,7 +231,7 @@ function addToEq(pos) {
 	if(pos < 7 && itemList[pos] != 0) {
 		posx = 385 + currentEqSpot*50;
 		posy = 20;
-		equationList[currentEqSpot] = itemList[pos];
+		equationList[currentEqSpot] = '' + itemList[pos];
 		console.log("iL[pos]: " + itemList[pos]);
 		itemSprites[pos].alpha = 0.25;
 	}
@@ -284,6 +296,7 @@ function use(id) {
 		if(pupList[1] > 0) {
 			useItem(1);
 			pupList[1]--;
+			renderInv();
 		}
 	}
 }

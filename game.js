@@ -143,7 +143,7 @@ function update() {
     if(actionKeys.useP.isDown) {
         if(pButton) {
             pButton = false;
-            use(0);
+            use(1);
         }
     } else {
         pButton = true;
