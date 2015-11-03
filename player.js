@@ -69,9 +69,5 @@ function useItem(item) {
 
 
 function killPlayer(player, enemy) {
-	//game over stuff
-	theme.stop();
-	lose.play();
 	player.kill();
-	//display fail animation
 }

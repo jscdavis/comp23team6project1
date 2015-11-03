@@ -14,6 +14,7 @@ var pickup;
 var theme;
 var win;
 var lose;
+var ming;
 var actionKeys;
 var jButton;
 var pButton;
@@ -49,6 +50,11 @@ function preload() {
     game.load.image('inventory', 'assets/inventory.png');
     game.load.image('equation', 'assets/equation.png');
     game.load.image('carrot', 'assets/carrot.png');
+    game.load.image('calc', 'assets/calc.png');
+    game.load.image('ming', 'assets/mingTile.png');
+    game.load.image('winner', 'assets/winner.png');
+    game.load.image('loser', 'assets/loser.png');
+
 }
 
 function create() {
@@ -77,7 +83,7 @@ function create() {
 
     map.createFromObjects('Number Layer', 8, 'carrot', 0, true, false, items);
 
-    items.callAll('updateNum');
+    items.forEach(updateNum, this);
 
     inventory = new Inventory(this, 0, 0);
 
@@ -86,7 +92,6 @@ function create() {
         mute: game.input.keyboard.addKey(Phaser.Keyboard.M),
         useJ: game.input.keyboard.addKey(Phaser.Keyboard.COMMA),
         useP: game.input.keyboard.addKey(Phaser.Keyboard.PERIOD),
-        clean: game.input.keyboard.addKey(Phaser.Keyboard.L),
     };
     jButton = false;
     pButton = false;
@@ -96,6 +101,8 @@ function create() {
 
     enemy = new Enemy (this, 32, game.world.height - 80);
     enemy2 = create_enemy2();
+
+    ming = game.add.sprite(64, game.world.height-64, 'ming');
 
     game.input.onDown.add(pause);
 
@@ -119,8 +126,10 @@ function update() {
     game.physics.arcade.collide(enemy2, layer);
 
     game.physics.arcade.overlap(player, items, addItem, null, this);
-    game.physics.arcade.overlap(player, enemy, killPlayer, null, this);
-    game.physics.arcade.overlap(player, enemy2, killPlayer, null, this);
+    game.physics.arcade.overlap(player, enemy, loser, null, this);
+    game.physics.arcade.overlap(player, enemy2, loser, null, this);
+    game.physics.arcade.overlap(player, ming, winner);
+
 
     if(actionKeys.mute.isDown) {
         if(theme.volume == 1) {
@@ -128,9 +137,6 @@ function update() {
         } else if(theme.volume == 0) {
             theme.fadeIn();
         }
-    }
-    if(actionKeys.clean.isDown) {
-        clean();
     }
     if(actionKeys.useJ.isDown) {
         if(jButton) {
@@ -148,8 +154,8 @@ function update() {
     } else {
         pButton = true;
     }
-
 }
+
 
 function toStr(num) {
     if(num == 0) {
@@ -185,9 +191,22 @@ function toStr(num) {
 }
 
 function updateNum(number) {
-    var s = toStr(number.value);
-    item.add(number.x, number.y, s);
-    number.kill();
+    var r = Math.floor(Math.random()*9 + 1);
+    number.value = r;
+}
+
+function winner(player) {
+    theme.stop();
+    win.play();
+    game.add.sprite(game.camera.x + 200, game.camera.y + 200, 'winner');
+    game.pause();
+}
+
+function loser(player) {
+    killPlayer(player);
+    theme.stop();
+    lose.play();
+    game.add.sprite(game.camera.x + 200, game.camera.y + 200, 'loser');
 }
 
 function pause() {
@@ -198,35 +217,4 @@ function pause() {
         theme.pause();
         game.paused = true;
     }
-}
-
-function clean() {
-    game.cache.removeBitmapFont('bmFont');
-    game.cache.removeTilemap('map');
-    game.cache.removeSound('pickup');
-    game.cache.removeSound('win');
-    game.cache.removeSound('lose');
-    game.cache.removeSound('theme');
-    game.cache.removeImage('grass');
-    game.cache.removeImage('dirt');
-    game.cache.removeImage('sky');
-    game.cache.removeImage('platformN');
-    game.cache.removeImage('background');
-    game.cache.removeImage('platform');
-    game.cache.removeImage('player');
-    game.cache.removeImage('0');
-    game.cache.removeImage('1');
-    game.cache.removeImage('2');
-    game.cache.removeImage('3');
-    game.cache.removeImage('4');
-    game.cache.removeImage('5');
-    game.cache.removeImage('6');
-    game.cache.removeImage('7');
-    game.cache.removeImage('8');
-    game.cache.removeImage('9');
-    game.cache.removeImage('inventory');
-    game.cache.removeImage('equation');
-    game.cache.removeImage('add');
-    game.cache.removeImage('subtract');
-    game.cache.removeImage('multiply');
 }

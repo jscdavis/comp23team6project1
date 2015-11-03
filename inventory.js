@@ -41,10 +41,10 @@ function Inventory(game, x, y) {
 
 	pupSprites[0] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[0].toString(), 12);
 	pupSprites[0].fixedToCamera = true;
-	pupSprites[0].cameraOffset.setTo(650, 40); 
+	pupSprites[0].cameraOffset.setTo(645, 40); 
 	pupSprites[1] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[1].toString(), 12);
 	pupSprites[1].fixedToCamera = true;
-	pupSprites[1].cameraOffset.setTo(750, 40); 
+	pupSprites[1].cameraOffset.setTo(745, 40); 
 
 	useKeys = {
 		inv1: game.input.keyboard.addKey(Phaser.Keyboard.ONE),
@@ -57,6 +57,7 @@ function Inventory(game, x, y) {
 		plus: game.input.keyboard.addKey(Phaser.Keyboard.EQUALS),
 		minus: game.input.keyboard.addKey(Phaser.Keyboard.UNDERSCORE),
 		make: game.input.keyboard.addKey(Phaser.Keyboard.ENTER),
+		esc: game.input.keyboard.addKey(Phaser.Keyboard.ESC),
 	}
 }
 
@@ -96,6 +97,10 @@ Inventory.prototype.update = function () {
 	if(useKeys.make.isDown) {
 		createEq();
 	}
+	if(useKeys.esc.isDown) {
+		destroyEquation();
+		restoreItems();
+	}
 }
 
 function renderEquation() {
@@ -104,48 +109,46 @@ function renderEquation() {
 			equationSprites[i] = game.add.bitmapText(game, game.camera.x + 505 + i*50, game.camera.y + 5, 'bmFont', equationList[i].toString(), 24);
 		else
 			equationSprites[i] = game.add.bitmapText(game, game.camera.x + 520 + i*50, game.camera.y + 10, 'bmFont', equationList[i], 8);
-		console.log("renderEq i: " + i);
 	};
 }
 
 function renderInv () {
-	// currentItemSpot = 0;
-	// for(var i = 0; i < itemList.length; i++) {
-	// 	if(itemList[i] != 0) {
-	// 		itemSprites[i].kill();
-	// 		addNum(parseInt(itemList[i]));
-	// 		itemSprites[i].fixedToCamera = true;
-	// 		itemSprites[i].cameraOffset.setTo(50*i + 10, 10);
-	// 		console.log("renderInv i: " + i);
-	// 	} else
-	// 		itemSprites[i] = null;
-	// };
-	console.log("2nd for loop");
+	currentItemSpot = 0;
+	for(var i = 0; i < itemList.length; i++) {
+		if(itemSprites[i] != null) {
+			itemSprites[i].kill();
+		}
+		if(itemList[i] != 0) {
+			addNum(parseInt(itemList[i]));
+			itemSprites[i].fixedToCamera = true;
+			itemSprites[i].cameraOffset.setTo(50*i + 10, 10);
+		} else
+			itemSprites[i] = null;
+	};
 	for(var j = 0; j < pupList.length; j++) {
-		console.log('werk');
 		pupSprites[j].kill();
 		pupSprites[j] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[j].toString(), 12);
 		pupSprites[j].fixedToCamera = true;
-		pupSprites[j].cameraOffset.setTo(650 + j*100, 25); 
+		pupSprites[j].cameraOffset.setTo(645 + j*100, 40); 
 	};
 }
 
 function addItem(player, item) {
 	if(currentItemSpot < FULL) {
 		pickup.play();
-		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', toStr(item.value), 32);
+		itemSprites[currentItemSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', item.value.toString(), 32);
 		itemSprites[currentItemSpot].fixedToCamera = true;
 		itemSprites[currentItemSpot].cameraOffset.setTo(50*currentItemSpot + 10, 10);
 		itemList[currentItemSpot] = parseInt(item.value);
 		currentItemSpot++;
 		item.kill();
+		renderInv();
 		return true;
 	} else
 		return false;
 }
 
 function addNum(num) {
-	console.log(num);
 	var fontsize = 32;
 	if(num >= 10)
 		fontsize = 20;
@@ -168,14 +171,20 @@ function addNum(num) {
 //TODO: fix this
 function removeItems() {
 	//removes all items from inventory used in equation
+	var count = 0;
 	for (var i = 0; i < currentItemSpot; i++) {
-		if(itemSprites[i].alpha < 1) {
+		if(itemSprites[i].alpha == 1) {
+			itemList[count] = itemList[i];
+			count++;
+		} else {
 			itemSprites[i].kill();
-			itemList[currentItemSpot-1] = 0;
-			currentItemSpot--;
-			i--;
 		}
 	}
+	for(var j = count; j < currentItemSpot; j++) {
+		itemList[j] = 0;
+	}
+	currentItemSpot = count;
+	renderInv();
 }
 
 function restoreItems() {
@@ -193,7 +202,7 @@ function createEq() {
 		return false;
 
 	} else if(num == jumpCost) {
-		pupList[0]++;
+		pupList[0]+=3;
 		removeItems();
 
 	} else if(num == projCost) {
@@ -207,7 +216,6 @@ function createEq() {
 		removeItems();
 	}
 	destroyEquation();
-	console.log(itemList);
 	return true;
 }
 
@@ -232,7 +240,6 @@ function addToEq(pos) {
 		posx = 385 + currentEqSpot*50;
 		posy = 20;
 		equationList[currentEqSpot] = '' + itemList[pos];
-		console.log("iL[pos]: " + itemList[pos]);
 		itemSprites[pos].alpha = 0.25;
 	}
 	equationSprites[currentEqSpot] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', equationList[currentEqSpot], 24);
@@ -268,7 +275,6 @@ function result() {
 	}
 
 	if(currentEqSpot < 5) {
-		console.log('resultShort: ' + result);
 		return result;
 	}
 
@@ -279,15 +285,12 @@ function result() {
 		result -= parseInt(equationList[4]);
 
 	}
-	console.log('result: ' + result);
 	return result;
 }
 
 function use(id) {
-	console.log('now');
 	if(id == 0) {
 		if(pupList[0] > 0) {
-			console.log('tried to use jump');
 			useItem(0);
 			pupList[0]--;
 			renderInv();
