@@ -3,6 +3,38 @@ var game = new Phaser.Game(800, 600, Phaser.AUTO, 'game', { preload: preload, cr
 var player;
 var enemy;
 var enemy2;
+var enemy3;
+var enemy4;
+var enemy5;
+var enemy6;
+var enemy7; 
+var enemy8;
+var enemy9;
+var enemy10;
+var enemy11;
+var enemy12;
+var enemy13;
+var enemy14;
+var enemy15;
+var enemy16;
+var enemy17;
+var enemy18;
+var enemy20;
+var enemy22;
+var enemy24;
+var enemy26;
+var enemy28; 
+var enemy30;
+var enemy32;
+var enemy34;
+var enemy36;
+var enemy38;
+var enemy40;
+var enemy42;
+var enemy44;
+var enemy46;
+var enemy48;
+var enemy50;
 var inventory;
 var items;
 var enemies;
@@ -78,9 +110,6 @@ function create() {
     items = game.add.group();
     items.enableBody = true;
 
-    var rand = Math.floor(Math.random()*10);
-    var str = toStr(rand);
-
     map.createFromObjects('Number Layer', 8, 'carrot', 0, true, false, items);
 
     items.forEach(updateNum, this);
@@ -97,10 +126,85 @@ function create() {
     pButton = false;
 
     game.physics.startSystem(Phaser.Physics.ARCADE);
+    
+    enemyodd = game.add.group();
+    //enemy = new Enemy (this, 32, game.world.height - 80);
+    enemy3 = new Enemy (this, 32, game.world.height - 200);
+    enemy5 = new Enemy (this, 2783, 2790);
+    enemy7 = new Enemy (this, 2933, 2720);
+    enemy9 = new Enemy (this, 4011, 2290);
+    enemy11 = new Enemy (this, 80, 1799);
+    enemy13 = new Enemy (this, 694, 1300);
+    enemy15 = new Enemy (this, 3787, 2899);
+    enemy17 = new Enemy (this, 4090, 2899);
+
+    enemyodd.add(enemy3);
+    enemyodd.add(enemy5);
+    enemyodd.add(enemy7);
+    enemyodd.add(enemy9);
+    enemyodd.add(enemy11);
+    enemyodd.add(enemy13);
+    enemyodd.add(enemy15);
+    enemyodd.add(enemy17);
+
+
+
+
+    enemyeven = game.add.group();
+
+    enemy2 = create_enemy2(32, game.world.height - 80);
+    enemy6 = create_enemy2(433, 3099);
+    enemy8 = create_enemy2(3228, 3099);
+    enemy10 = create_enemy2(2000, 3099);
+    enemy12 = create_enemy2(433, 3099);
+    enemy14 = create_enemy2(4111, 2352);
+    enemy16 = create_enemy2(514, 1190);
+    enemy18 = create_enemy2(814, 1190);
+    enemy20 = create_enemy2(2311, 1190);
+    enemy22 = create_enemy2(3342, 1030);
+    enemy24 = create_enemy2(3311, 811);
+    enemy26 = create_enemy2(480, 790);
+    enemy28 = create_enemy2(730, 690);
+    enemy30 = create_enemy2(1040, 690);
+    enemy32 = create_enemy2(1390, 690);
+    enemy34 = create_enemy2(1735, 816);
+    enemy36 = create_enemy2(2011, 690);
+    enemy38 = create_enemy2(2244, 690);
+    enemy40 = create_enemy2(4274, 200);
+    enemy42 = create_enemy2(5130, 220);
+    enemy44 = create_enemy2(6023, 220);
+    enemy46 = create_enemy2(6213, 2800);
+    enemy48 = create_enemy2(6200, 2800);
+    enemy50 = create_enemy2(6200, 2790);
+    
+    enemyeven.add(enemy2);
+    enemyeven.add(enemy6);
+    enemyeven.add(enemy8);
+    enemyeven.add(enemy10);
+    enemyeven.add(enemy12);
+    enemyeven.add(enemy14);
+    enemyeven.add(enemy16);
+    enemyeven.add(enemy18);
+    enemyeven.add(enemy20);
+    enemyeven.add(enemy22);
+    enemyeven.add(enemy24);
+    enemyeven.add(enemy26);
+    enemyeven.add(enemy28);
+    enemyeven.add(enemy30);
+    enemyeven.add(enemy32);
+    enemyeven.add(enemy34);
+    enemyeven.add(enemy36);
+    enemyeven.add(enemy38);
+    enemyeven.add(enemy40);
+    enemyeven.add(enemy42);
+    enemyeven.add(enemy44);
+    enemyeven.add(enemy46);
+    enemyeven.add(enemy48);
+    enemyeven.add(enemy50);
+  
+    
     player = new Player(this, 200, game.world.height - 600);
 
-    enemy = new Enemy (this, 32, game.world.height - 80);
-    enemy2 = create_enemy2();
 
     ming = game.add.sprite(64, game.world.height-64, 'ming');
 
@@ -120,14 +224,15 @@ function update() {
     //collisions
     game.physics.arcade.collide(player, layer);
     game.physics.arcade.collide(player, platlayer);
-    game.physics.arcade.collide(enemy, platlayer, changeDirections);
-    game.physics.arcade.collide(enemy2, platlayer, changeDirections2);
-    game.physics.arcade.collide(enemy, layer);
-    game.physics.arcade.collide(enemy2, layer);
+    game.physics.arcade.collide(enemyodd, platlayer, changeDirections);
+    game.physics.arcade.collide(enemyeven, platlayer, changeDirections2);
+    game.physics.arcade.collide(enemyodd, layer);
+    game.physics.arcade.collide(enemyeven, layer);
 
     game.physics.arcade.overlap(player, items, addItem, null, this);
-    game.physics.arcade.overlap(player, enemy, loser, null, this);
-    game.physics.arcade.overlap(player, enemy2, loser, null, this);
+    game.physics.arcade.overlap(player, enemyodd, loser, null, this);
+    game.physics.arcade.overlap(player, enemyeven, loser, null, this);
+    
     game.physics.arcade.overlap(player, ming, winner);
 
 

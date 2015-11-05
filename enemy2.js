@@ -1,39 +1,43 @@
 var moveSpeed2 = 200;
 var direction2; 
+var e;
 
 
+function create_enemy2(x, y) {
 
-function create_enemy2() {
     direction2 = 0;
-    enemy2 = game.add.sprite(32, game.world.height - 80, 'enemy2');
-    game.physics.enable(enemy2, Phaser.Physics.ARCADE);
+    e = game.add.sprite(x, y, 'enemy2');
+    game.physics.enable(e, Phaser.Physics.ARCADE);
 
-    enemy2.animations.add('walk');
+    e.animations.add('walk');
 
-    enemy2.animations.play('walk', 50, true);
+    e.animations.play('walk', 50, true);
 
-    enemy2.body.velocity.x = moveSpeed2;
+    e.body.velocity.x = moveSpeed2;
 
 
-    game.add.tween(enemy2.body.velocity.x).to({ x: game.world.width }, 100000, Phaser.Easing.Linear.None, true);
+    game.add.tween(e.body.velocity.x).to({ x: game.world.width }, 100000, Phaser.Easing.Linear.None, true);
     
-    enemy2.body.gravity.y = 400;
-    enemy2.body.collideWorldBounds = true;
-
-    game.add.existing(enemy2);
+    e.body.gravity.y = 400;
+    e.body.collideWorldBounds = true;
 
 
-    return enemy2;
+    game.add.existing(e);
+
+
+
+    return e;
 
 }
 
 
-function changeDirections2 (enemy2, platlayer) {
+function changeDirections2 (e, platlayer) {
+
     if (direction2 == 0){
-    	enemy2.body.velocity.x = -moveSpeed2;
-    	direction2 = 1;
+        e.body.velocity.x = -moveSpeed2;
+        direction2 = 1;
     }else if (direction2 == 1){
-    	enemy2.body.velocity.x = moveSpeed2;
-    	direction2 = 0;
+        e.body.velocity.x = moveSpeed2;
+        direction2 = 0;
     }
 }
