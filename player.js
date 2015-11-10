@@ -60,7 +60,6 @@ function jump() {
 
 function useItem(item) {
 	if(item == 0) {
-		console.log('used jump');
 		jump();
 	} else if(item == 1) {
 		//create projectile moving in direction of player

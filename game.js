@@ -19,13 +19,21 @@ var enemy15;
 var enemy16;
 var enemy17;
 var enemy18;
+var enemy19;
 var enemy20;
+var enemy21;
 var enemy22;
+var enemy23;
 var enemy24;
+var enemy25;
 var enemy26;
-var enemy28; 
+var enemy27;
+var enemy28;
+var enemy29;
 var enemy30;
+var enemy31;
 var enemy32;
+var enemy33;
 var enemy34;
 var enemy36;
 var enemy38;
@@ -47,6 +55,7 @@ var theme;
 var win;
 var lose;
 var ming;
+var ming2;
 var actionKeys;
 var jButton;
 var pButton;
@@ -137,6 +146,14 @@ function create() {
     enemy13 = new Enemy (this, 694, 1300);
     enemy15 = new Enemy (this, 3787, 2899);
     enemy17 = new Enemy (this, 4090, 2899);
+    enemy19 = new Enemy (this, 4027, 299);
+    enemy21 = new Enemy (this, 4280, 299);
+    enemy23 = new Enemy (this, 4600, 299);
+    enemy25 = new Enemy (this, 5800, 299);
+    enemy27 = new Enemy (this, 3231, 399);
+    enemy29 = new Enemy (this, 3591, 899);
+    enemy31 = new Enemy (this, 3096, 899);
+    enemy33 = new Enemy (this, 3225, 699);
 
     enemyodd.add(enemy3);
     enemyodd.add(enemy5);
@@ -146,13 +163,21 @@ function create() {
     enemyodd.add(enemy13);
     enemyodd.add(enemy15);
     enemyodd.add(enemy17);
+    enemyodd.add(enemy19);
+    enemyodd.add(enemy21);
+    enemyodd.add(enemy23);
+    enemyodd.add(enemy25);
+    enemyodd.add(enemy27);
+    enemyodd.add(enemy29);
+    enemyodd.add(enemy31);
+    enemyodd.add(enemy33);
 
 
 
 
     enemyeven = game.add.group();
 
-    enemy2 = create_enemy2(32, game.world.height - 80);
+
     enemy6 = create_enemy2(433, 3099);
     enemy8 = create_enemy2(3228, 3099);
     enemy10 = create_enemy2(2000, 3099);
@@ -177,7 +202,7 @@ function create() {
     enemy48 = create_enemy2(6200, 2800);
     enemy50 = create_enemy2(6200, 2790);
     
-    enemyeven.add(enemy2);
+
     enemyeven.add(enemy6);
     enemyeven.add(enemy8);
     enemyeven.add(enemy10);
@@ -203,10 +228,12 @@ function create() {
     enemyeven.add(enemy50);
   
     
-    player = new Player(this, 200, game.world.height - 600);
+    player = new Player(this, 200, game.world.height - 100);
 
 
-    ming = game.add.sprite(64, game.world.height-64, 'ming');
+    ming = game.add.sprite(game.world.width-32, game.world.height-64, 'ming');
+    ming2 = game.add.sprite(game.world.width-32, 128, 'ming');
+
 
     game.input.onDown.add(pause);
 
