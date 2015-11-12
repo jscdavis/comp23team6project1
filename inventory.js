@@ -30,7 +30,7 @@ function Inventory(game, x, y) {
 	currentPUP = 0;
 	currentEqSpot = 0;
 	currentItemSpot = 0;
-	pupList = [10, 0];
+	pupList = [1, 0];
 	equationList = [0, '+', 0, '+', 0];
 	equationSprites = new Array(5);
 	itemSprites = new Array(7);
@@ -125,6 +125,9 @@ function renderInv () {
 		} else
 			itemSprites[i] = null;
 	};
+}
+
+function renderPups() {
 	for(var j = 0; j < pupList.length; j++) {
 		pupSprites[j].kill();
 		pupSprites[j] = game.add.bitmapText(game.camera.x, game.camera.y, 'bmFont', pupList[j].toString(), 12);
@@ -142,7 +145,7 @@ function addItem(player, item) {
 		itemList[currentItemSpot] = parseInt(item.value);
 		currentItemSpot++;
 		item.kill();
-		renderInv();
+		//renderInv();
 		return true;
 	} else
 		return false;
@@ -293,13 +296,13 @@ function use(id) {
 		if(pupList[0] > 0) {
 			useItem(0);
 			pupList[0]--;
-			renderInv();
+			renderPups();
 		}
 	} else if(id == 1) {
 		if(pupList[1] > 0) {
 			useItem(1);
 			pupList[1]--;
-			renderInv();
+			renderPups();
 		}
 	}
 }
